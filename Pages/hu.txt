@@ -1,0 +1,267 @@
+import React, { useState, useEffect, useRef } from 'react';
+import { View, Text,  Image, ActivityIndicator, TouchableOpacity, StyleSheet } from 'react-native';
+import { MaterialIcons } from '@expo/vector-icons';
+import { Audio } from 'expo-av';
+import axios from 'axios';
+import { useRoute } from '@react-navigation/native';
+import Slider from '@react-native-community/slider'
+
+
+export default function Play() {
+  const [songProgress, setSongProgress] = useState('0:00');
+  const [isPlaying, setIsPlaying] = useState(false);
+  const [sound, setSound] = useState();
+  const [songDuration, setSongDuration] = useState(0);
+  const [songData, setSongData] = useState();
+  const route = useRoute();
+  const [positionMillis, setPositionMillis] = useState(0);
+
+
+  const uri = songData == null || songData == '' ? '' : songData.preview;
+  const { musicId, musicTitle } = route.params;
+  useEffect(() => {
+    const fetchSongById = async (songId) => {
+      const apiKey = 'f8f15b92eamsh69750d54920ffb6p11e1b2jsn9c8fab99fa0f';
+      const apiUrl = `https://deezerdevs-deezer.p.rapidapi.com/track/${songId}`;
+
+      try {
+        const response = await axios.get(apiUrl, {
+          headers: {
+            'x-rapidapi-key': apiKey,
+            'x-rapidapi-host': 'deezerdevs-deezer.p.rapidapi.com',
+          },
+        });
+
+        if (response.status === 200) {
+          const songs = response.data;
+          setSongData(songs);
+          setSongDuration(parseInt(songs.duration));
+        } else {
+          console.error('Failed to fetch song');
+        }
+      } catch (error) {
+        console.error('Error fetching song:', error);
+      }
+    };
+
+    fetchSongById(musicId);
+
+
+  }, []);
+  useEffect(() => {
+    async function setupAudio() {
+      try {
+        const { sound } = await Audio.Sound.createAsync(
+          { uri: uri },
+          { shouldPlay: uri==null || uri==""?false:true }
+        );
+        setSound(sound);
+      } catch (error) {
+        console.log('Error setting up audio: ', error);
+      }
+    }
+
+    setupAudio();
+
+    return () => {
+      if (sound !== null || sound !== "") {
+        sound.unloadAsync();
+      }
+    };
+  }, [uri]);
+
+  useEffect(() => {
+    if (sound !== null || sound !== "") {
+      sound.setOnPlaybackStatusUpdate((status) => {
+        if (status.isPlaying) {
+          setPositionMillis(status.positionMillis);
+          // console.log(status.positionMillis/1000);
+          const totalSeconds = status.positionMillis;
+          const min = Math.floor(totalSeconds / 60);
+          const sec = Math.floor(totalSeconds % 60);
+          setSongProgress(`${min}:${sec < 10 ? '0' : ''}${sec}`)
+        }
+      });
+    }
+  }, [sound]);
+
+  const formatTime = (milliseconds) => {
+    const totalSeconds = milliseconds;
+    const min = Math.floor(totalSeconds / 60);
+    const sec = Math.floor(totalSeconds % 60);
+    return `${min}:${sec < 10 ? '0' : ''}${sec}`;
+  };
+
+
+  if (!songData) {
+    return (
+      <View style={styles.loadingContainer}>
+        <ActivityIndicator size={30} color="#FF0077" />
+      </View>
+    );
+  }
+
+
+
+  async function stopSound() {
+    if (sound) {
+      await sound.stopAsync();
+      setIsPlaying(false);
+    }
+  }
+
+
+  async function togglePlayback() {
+    if (sound !== null || sound !== "") {
+      if (isPlaying) {
+
+        await sound.pauseAsync();
+      } else {
+        await sound.playAsync();
+      }
+      setIsPlaying(!isPlaying);
+    }
+  }
+  return (
+    <View style={styles.container}>
+      <Image
+        source={{ uri: songData.album.cover_big }}
+        style={styles.albumCover}
+      />
+      <Text style={styles.songTitle}>{songData.title}</Text>
+      <Text style={styles.artistName}>{songData.artist.name}</Text>
+
+      {/* Progress Bar */}
+
+      <Slider
+        style={{ width: '100%', height: 40 }}
+        minimumValue={0}
+        maximumValue={songDuration*2} // Set maximumValue to songDuration
+        minimumTrackTintColor="#FF6B6B"
+        maximumTrackTintColor="#8b4242"
+        value={positionMillis*10}
+        onSlidingComplete={async (value) => {
+          if (sound !== null || sound !== "") {
+            await sound.setPositionAsync(value); // No need to multiply by 1000
+          }
+        }}
+       
+      />
+
+      {/* Controls */}
+      <View style={styles.controls}>
+        <TouchableOpacity onPress={() => { }}>
+          <MaterialIcons name="shuffle" size={30} color="#FF6B6B" />
+        </TouchableOpacity>
+        <TouchableOpacity onPress={() => { }}>
+          <MaterialIcons name="skip-previous" size={30} color="#FF6B6B" />
+        </TouchableOpacity>
+        <TouchableOpacity onPress={togglePlayback}>
+          <MaterialIcons name={isPlaying ? 'pause' : 'play-arrow'} size={50} color="#FF6B6B" />
+        </TouchableOpacity>
+        <TouchableOpacity onPress={() => { }}>
+          <MaterialIcons name="skip-next" size={30} color="#FF6B6B" />
+        </TouchableOpacity>
+        <TouchableOpacity onPress={() => { }}>
+          <MaterialIcons name="repeat" size={30} color="#FF6B6B" />
+        </TouchableOpacity>
+      </View>
+
+      {/* Time Display */}
+      <View style={styles.timeContainer}>
+        <Text style={styles.timeText} >{songProgress}</Text>
+        <Text style={styles.timeText}>{formatTime(songDuration)}</Text>
+      </View>
+      <View style={styles.lyricsCon}>
+        <View style={styles.ll}>
+          <Text style={{
+            color: 'white',
+            fontSize: 20,
+            marginTop: 10,
+          }}>Lyrics</Text>
+        </View>
+        <View style={styles.lr}>
+          <Text
+            style={{
+              color: 'white',
+              fontSize: 20,
+              marginTop: 10,
+            }}
+          >Songs</Text>
+        </View>
+      </View>
+    </View>
+  );
+}
+
+const styles = StyleSheet.create({
+  lyricsCon: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    width: '100%',
+    marginTop: 10,
+    borderWidth: 2,
+    borderRadius: 20,
+    paddingHorizontal: 20,
+    height: 'auto',
+    maxHeight: 300,
+  },
+  container: {
+    flex: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: '#000000',
+  },
+  loadingContainer: {
+    flex: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: '#000000',
+  },
+  albumCover: {
+    width: '100%',
+    height: '55%',
+    marginBottom: 20,
+    borderRadius: 5,
+  },
+  songTitle: {
+    fontSize: 24,
+    fontWeight: 'bold',
+    marginBottom: 10,
+    color: '#FFFFFF',
+  },
+  artistName: {
+    fontSize: 18,
+    marginBottom: 20,
+    color: '#FFFFFF',
+  },
+  progressBar: {
+    width: '90%',
+    marginBottom: 20,
+  },
+  progressBarContainer: {
+    width: '90%',
+    height: 10,
+    backgroundColor: '#D3D3D3',
+    marginBottom: 20,
+    borderRadius: 40
+  },
+  controls: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-around',
+    width: '90%',
+    marginBottom: 20,
+  },
+  timeContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    width: '90%',
+  },
+  timeText: {
+    color: '#FFFFFF',
+  },
+});
+
