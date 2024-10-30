@@ -3,12 +3,13 @@
 **TuneFlow** is a next-generation **music streaming and earning app** that lets you experience music like never before. Tune in to a vast library of songs, discover new artists, and earn rewards as you enjoy your favorite tracks! Whether you’re an artist or a fan, TuneFlow brings everyone closer to the music they love.
 
 ---
-
+(![logo](https://github.com/user-attachments/assets/505e9c69-675a-4134-909c-7a638fb34880)
+)
 ### 🎤 About TuneFlow
 - **Owner**: Samuel Eze
-  - ![Samuel Eze](https://i.ibb.co/18TnW7g)
+  - ![Samuel Eze](https://i.ibb.co/r4HtrFj/samiepiano.jpg)
 - **Lead Developer**: Ephraim Dev
-  - ![Ephraim Dev](https://i.ibb.co/rFCX2D6)
+  - ![Ephraim Dev](https://i.ibb.co/4K60RhT/b.jpg)
 - **Special Thanks**: With contributions from other talented developers, including guidance from our mentor, Teacher Godwin CFK.
 
 ### 🌟 Key Features

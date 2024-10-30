@@ -11,7 +11,7 @@ import { LinearGradient } from 'expo-linear-gradient';
 
 
 
-const loadFonts =  async () => {
+const loadFonts = async () => {
     await Font.loadAsync({
         'BlackOpsOne-Regular': require('../assets/fonts/BlackOpsOne-Regular.ttf'),
     });
@@ -35,15 +35,15 @@ const Search = ({ navigation }) => {
     const isTablet = Dimensions.get("screen").width > 725;
     const [yes, setYes] = useState(false)
     //download btn
-    useEffect(()=>{
-        if(searchQuery == null || searchQuery == ""){
-            setTimeout(()=>{
-              setIsLoading(false)
-            },4000)
-        }else{
+    useEffect(() => {
+        if (searchQuery == null || searchQuery == "") {
+            setTimeout(() => {
+                setIsLoading(false)
+            }, 4000)
+        } else {
             console.log("searching is in process...")
         }
-       },[])
+    }, [])
 
     useEffect(() => {
         (async () => {
@@ -77,42 +77,43 @@ const Search = ({ navigation }) => {
 
 
     const fetchSongs = async (query) => {
-        setIsLoading(true);
         quered = query;
-        quered == '' ? setYes(false) && quered=='' : setYes(true) && quered==quered;
+        quered == '' ? setYes(false) && quered == '' : setYes(true) && quered == quered;
         const queryParam = quered;
-        const url = `https://deezerdevs-deezer.p.rapidapi.com/search?q=${queryParam}&limit=40`;
+        const url = `https://deezerdevs-deezer.p.rapidapi.com/search?q=${queryParam}&limit=30`;
         const options = {
             headers: {
                 'x-rapidapi-key': 'f8f15b92eamsh69750d54920ffb6p11e1b2jsn9c8fab99fa0f',
                 'x-rapidapi-host': 'deezerdevs-deezer.p.rapidapi.com'
-              }
+            }
         };
 
         try {
             const response = await axios.get(url, options);
+            console.log("passed")
             setSearchResults(response.data.data);
             setIsListToPlay(response.data.data.slice(0, 7));
             setIsSearch(false)
+            console.log("passed")
+
         } catch (error) {
             console.error('Error fetching songs:', error);
-            setSearchResults([]);
         } finally {
             setTimeout(() => {
-                setIsLoading(false);
                 setIsSearch(true)
             }, 1000)
         }
     };
 
+    
     const handleSearch = (query) => {
         setSearchQuery(query);
         fetchSongs(query);
     };
-   
 
 
-    const handleToPlayScreen = ({ artistL, songId, titleL, list,preview }) => {
+
+    const handleToPlayScreen = ({ artistL, songId, titleL, list, preview }) => {
         console.log(artistL)
         isListToPlay.forEach(element => {
             if (element.artist.name == artistL) {
@@ -121,7 +122,7 @@ const Search = ({ navigation }) => {
                 setIsListToPlay([...isListToPlay, list])
             }
         });
-        navigation.navigate("PLayMusic", { artistL, songId, titleL, playingSong: list, list: isListToPlay,preview })
+        navigation.navigate("PLayMusic", { artistL, songId, titleL, playingSong: list, list: isListToPlay, preview })
     }
     const SearchHead = () => {
         return (
@@ -157,9 +158,9 @@ const Search = ({ navigation }) => {
     }
     const SearchBody = () => {
         return (
-            <View style={{ flex: 1, marginBottom:70,width: widthPercentageToDP('100%'), display: 'flex', flexDirection: 'row', gap: widthPercentageToDP("2.05%"), flexWrap: 'wrap', padding: 10, height: heightPercentageToDP('54%'), backgroundColor: 'transparent', left: - widthPercentageToDP("5%"), borderRadius: 20, }} >
+            <View style={{ flex: 1, marginBottom: 70, width: widthPercentageToDP('100%'), display: 'flex', flexDirection: 'row', gap: widthPercentageToDP("2.05%"), flexWrap: 'wrap', padding: 10, height: heightPercentageToDP('54%'), backgroundColor: 'transparent', left: - widthPercentageToDP("5%"), borderRadius: 20, }} >
 
-                <TouchableOpacity style={{ opacity: 1 }} onPress={() => navigation.navigate("Music",{title:"Music"})}>
+                <TouchableOpacity style={{ opacity: 1 }} onPress={() => navigation.navigate("Music", { title: "Music" })}>
                     <ShimmerPlaceholder
                         visible={!isLoading}
                         isInteraction={true}
@@ -200,7 +201,7 @@ const Search = ({ navigation }) => {
                     </ShimmerPlaceholder>
 
                 </TouchableOpacity>
-                <TouchableOpacity style={{ opacity: 1 }} onPress={() => navigation.navigate("Music",{title:"Gospel"})}>
+                <TouchableOpacity style={{ opacity: 1 }} onPress={() => navigation.navigate("Music", { title: "Gospel" })}>
                     <ShimmerPlaceholder
                         isInteraction={true}
                         visible={!isLoading}
@@ -240,7 +241,7 @@ const Search = ({ navigation }) => {
                         </View>
                     </ShimmerPlaceholder>
                 </TouchableOpacity>
-                <TouchableOpacity style={{ opacity: 1 }} onPress={() => navigation.navigate("Music",{title:"Jazz"})}>
+                <TouchableOpacity style={{ opacity: 1 }} onPress={() => navigation.navigate("Music", { title: "Jazz" })}>
                     <ShimmerPlaceholder
                         isInteraction={true}
                         visible={!isLoading}
@@ -280,7 +281,7 @@ const Search = ({ navigation }) => {
                         </View>
                     </ShimmerPlaceholder>
                 </TouchableOpacity>
-                <TouchableOpacity style={{ opacity: 1 }} onPress={() => navigation.navigate("Music",{title:"Hip Hop"})}>
+                <TouchableOpacity style={{ opacity: 1 }} onPress={() => navigation.navigate("Music", { title: "Hip Hop" })}>
                     <ShimmerPlaceholder
                         isInteraction={true}
 
@@ -321,7 +322,7 @@ const Search = ({ navigation }) => {
                         </View>
                     </ShimmerPlaceholder>
                 </TouchableOpacity>
-                <TouchableOpacity style={{ opacity: 1 }} onPress={() => navigation.navigate("Music",{title:"Soul Music"})}>
+                <TouchableOpacity style={{ opacity: 1 }} onPress={() => navigation.navigate("Music", { title: "Soul Music" })}>
                     <ShimmerPlaceholder
                         isInteraction={true}
 
@@ -362,7 +363,7 @@ const Search = ({ navigation }) => {
                         </View>
                     </ShimmerPlaceholder>
                 </TouchableOpacity>
-                <TouchableOpacity style={{ opacity: 1 }} onPress={() => navigation.navigate("Music",{title:"Pop Music"})}>
+                <TouchableOpacity style={{ opacity: 1 }} onPress={() => navigation.navigate("Music", { title: "Pop Music" })}>
                     <ShimmerPlaceholder
                         isInteraction={true}
 
@@ -403,7 +404,7 @@ const Search = ({ navigation }) => {
                         </View>
                     </ShimmerPlaceholder>
                 </TouchableOpacity>
-                <TouchableOpacity style={{ opacity: 1 }} onPress={() => navigation.navigate("Music",{title:"Electronic Music"})}>
+                <TouchableOpacity style={{ opacity: 1 }} onPress={() => navigation.navigate("Music", { title: "Electronic Music" })}>
                     <ShimmerPlaceholder
                         isInteraction={true}
                         visible={!isLoading}
@@ -443,7 +444,7 @@ const Search = ({ navigation }) => {
                         </View>
                     </ShimmerPlaceholder>
                 </TouchableOpacity>
-                <TouchableOpacity style={{ opacity: 1 }} onPress={() => navigation.navigate("Music",{title:"Blues"})}>
+                <TouchableOpacity style={{ opacity: 1 }} onPress={() => navigation.navigate("Music", { title: "Blues" })}>
                     <ShimmerPlaceholder
                         isInteraction={true}
 
@@ -484,7 +485,7 @@ const Search = ({ navigation }) => {
                         </View>
                     </ShimmerPlaceholder>
                 </TouchableOpacity>
-                <TouchableOpacity style={{ opacity: 1 }} onPress={() => navigation.navigate("Music",{title:"Devido"})}>
+                <TouchableOpacity style={{ opacity: 1 }} onPress={() => navigation.navigate("Music", { title: "Devido" })}>
                     <ShimmerPlaceholder
                         isInteraction={true}
 
@@ -508,7 +509,7 @@ const Search = ({ navigation }) => {
                                 fontSize: 20,
                                 top: -20,
                             }}>
-                                Devido 
+                                Devido
                             </Text>
                             <Image
                                 source={require('../artist/7.jpg')}
@@ -525,7 +526,7 @@ const Search = ({ navigation }) => {
                         </View>
                     </ShimmerPlaceholder>
                 </TouchableOpacity>
-                <TouchableOpacity style={{ opacity: 1 }} onPress={() => navigation.navigate("Music",{title:"Spotlite Nation"})}>
+                <TouchableOpacity style={{ opacity: 1 }} onPress={() => navigation.navigate("Music", { title: "Spotlite Nation" })}>
                     <ShimmerPlaceholder
                         isInteraction={true}
 
@@ -549,7 +550,7 @@ const Search = ({ navigation }) => {
                                 fontSize: 20,
                                 top: -20,
                             }}>
-                                Spotlite Nation 
+                                Spotlite Nation
                             </Text>
                             <Image
                                 source={require('../artist/11.jpg')}
@@ -595,11 +596,11 @@ const Search = ({ navigation }) => {
                     </View>
                 </ShimmerPlaceholder>
             </View>
-         
+
             <View style={{ width: widthPercentageToDP("100%"), height: 40, }}></View>
             <FlatList
                 data={searchResults}
-                keyExtractor={(item) => item.id.toString()}
+                keyExtractor={(item) => item.id?.toString() || Math.random().toString()}
                 renderItem={({ item }) => (
                     <TouchableOpacity onPress={() => console.log("loading...")}>
                         <ShimmerPlaceholder
@@ -614,14 +615,24 @@ const Search = ({ navigation }) => {
                             }}
                         >
                             <View style={styles.resultItem}>
-                                <TouchableOpacity onPress={handleToPlayScreen({ songId: item.id, artistL: item.artist.name, titleL: item.title, list: item,preview:item.preview })}>
-                                    <Image source={{ uri: item.album.cover_big ? item.album.cover : 'https://via.placeholder.com/150' }} style={styles.resultImage} />
+                                <TouchableOpacity onPress={() => handleToPlayScreen({
+                                    songId: item.id,
+                                    artistL: item.artist?.name,
+                                    titleL: item.title,
+                                    list: item,
+                                    preview: item.preview
+                                })}>
+                                    <Image
+                                        source={{ uri: item.album?.cover || 'https://via.placeholder.com/150' }}
+                                        style={styles.resultImage}
+                                    />
                                 </TouchableOpacity>
 
                                 <View style={styles.resultTextContainer}>
                                     <Text style={styles.resultTitle}>{item.title}</Text>
-                                    <Text style={styles.resultArtist}>{item.artist.name}</Text>
+                                    <Text style={styles.resultArtist}>{item.artist?.name}</Text>
                                 </View>
+
                                 {currentSong?.id === item.id && isPlaying ? (
                                     <TouchableOpacity onPress={pauseSong}>
                                         <Ionicons name="pause-circle" size={40} color="white" style={styles.playIcon} />
@@ -636,25 +647,30 @@ const Search = ({ navigation }) => {
                     </TouchableOpacity>
                 )}
                 ListEmptyComponent={() => (
-                    <View style={{ flex: 1, padding: 0, width: widthPercentageToDP("100%"), zIndex: -10, height: heightPercentageToDP("175%"), top: isTablet ? 0 : 0, top: -10, }}>
-
-                        <Text style={{ color: "white", fontSize: 25, fontWeight: "bold", top: 24, marginBottom: 30 }}>Browse all</Text>
+                    <View style={{
+                        flex: 1,
+                        padding: 0,
+                        width: widthPercentageToDP("100%"),
+                        zIndex: -10,
+                        height: heightPercentageToDP("175%"),
+                        top: -10
+                    }}>
+                        <Text style={{ color: "white", fontSize: 25, fontWeight: "bold", marginBottom: 30 }}>Browse all</Text>
                         <SearchBody />
-
-                        <Text style={{ color: "white", fontSize: 25, fontWeight: "bold", top: 24, marginBottom: 34 }}>Explore And Earn</Text>
+                        <Text style={{ color: "white", fontSize: 25, fontWeight: "bold", marginBottom: 34 }}>Explore And Earn</Text>
                         <SearchHead />
-                        <Text style={{ color: "white", fontSize: 25, fontWeight: "bold", top: 24, marginBottom: 34 }}>Refer Friends and Earn</Text>
+                        <Text style={{ color: "white", fontSize: 25, fontWeight: "bold", marginBottom: 34 }}>Refer Friends and Earn</Text>
                         <SearchEnd />
-
                     </View>
                 )}
                 contentContainerStyle={styles.resultListContainer}
                 bounces={true}
                 scrollEnabled={true}
             />
+
             {currentSong && (
                 <View style={{ ...styles.bottomContainer, top: isTablet ? hp('84.5%') : hp('80%') }}>
-                    <TouchableOpacity onPress={() => handleToPlayScreen({ songId: currentSong.id, artistL: currentSong.artist.name, titleL: currentSong.title, list:currentSong,preview:currentSong.preview })}>
+                    <TouchableOpacity onPress={() => handleToPlayScreen({ songId: currentSong.id, artistL: currentSong.artist.name, titleL: currentSong.title, list: currentSong, preview: currentSong.preview })}>
                         <Image source={{ uri: currentSong.album.cover_medium }} style={styles.bottomImage} />
                     </TouchableOpacity>
 
